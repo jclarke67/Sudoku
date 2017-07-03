@@ -1,7 +1,7 @@
 output: sudoku.o Stack.o Board.o 
 	g++ sudoku.o Stack.o Board.o -o output
 
-sudoku.o: sudoku.cc Board.h Stack.h 
+sudoku.o: sudoku.cc
 	g++ -c sudoku.cc
 	
 Stack.o: Stack.cc Stack.h
