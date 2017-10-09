@@ -1,73 +1,100 @@
-#include "Stack.h"
+#include <cassert>
+#include "stack.h"
 #include <iostream>
 #include <cstdlib>
 
 using namespace std;
 
-typedef int Item;
+typedef int element;
 
-Stack::Node::Node(const Item& value, Node* next) {
-  Value = value;
-  Next = next;
+stack::node::node(element data, node* n) {
+  value = data;
+  next = n;
 }
 
-Stack::Stack() {
-  Top = NULL;
+
+stack::stack() {
+  _top = NULL;
 }
 
-void Stack::push(const Item& item) {
-  Top = new Node(item, Top);
-  len++;
+void stack::push(const element& item) {
+  //cout << "PUSH ENTER" << endl;
+  _top = new node(item, _top);
+  //cout << "PUSH EXIT" << endl;
+
 }
 
-Stack::Node* Stack::copy(Node* head) {
+stack::node* stack::copy(node* head) {
   if(head == NULL)
     return NULL;
 
-  Node* x = copy(Top->Next);
-  Node* newOne = new Node(head->Value, x);
+  node* x = copy(_top->next);
+  node* newOne = new node(head->value, x);
   return newOne;
+
 }
 
-void Stack::pop() {
-  //assert(!empty());
-  
-  Node* dead = Top;
-  
-  Top = Top->Next;
+void stack::pop() {
+  //cout << "POP ENTER" << endl;
+  assert(!empty());
 
+  node* dead = _top;
+  if(_top -> next)
+    _top = _top->next;
+  else
+    _top = NULL;
   delete dead;
+  //cout << "POP EXIT" << endl;
+
+
 }
 
-Item Stack::top() const {
-  return Top->Value;
+element stack::top() const {
+  //cout << "TOP ENTER" << endl;
+  //cout << "TOP EXIT" << endl;
+  assert(!empty());
+  return _top->value;
+
+
 }
 
-bool Stack::empty() const {
-  if(Top == NULL) {
+bool stack::empty() const {
+  //cout << "EMPTY ENTER" << endl;
+  if(_top == NULL) {
+  //cout << "EMPTY EXIT" << endl;
     return true;
 
   }
+  //cout << "EMPTY EXIT" << endl;
   return false;
 }
 
-void Stack::show() const {
-  for (Node* p = Top; p != NULL; p = p->Next)
-    cout << "[" << p->Value << "]" << endl;
-}
+void stack::show() const {
+  //cout << "SHOW ENTER" << endl;
 
-void Stack::deleteAll(Node* front) {
-  if (front == NULL)
-  return;
+  for (node* p = _top; p != NULL; p = p->next)
+    cout << "[" << p->value << "]";
+  //cout << "SHOW EXIT" << endl;
 
-  deleteAll(front->Next);
-  delete front;
-}
-
-Stack::~Stack() {
-  deleteAll(Top);
-}
-
-int Stack::length() {
   
 }
+
+
+void stack::deleteAll(node* front) {
+  //cout << "DELETE ENTER" << endl;
+
+  if (front == NULL)
+    //cout << "DELETE EXIT" << endl;
+
+    return;
+
+  deleteAll(front->next);
+  delete front;
+
+}
+
+stack::~stack() {
+
+  deleteAll(_top);
+}
+
