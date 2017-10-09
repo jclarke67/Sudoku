@@ -1,37 +1,35 @@
 #ifndef STACK_H
 #define STACK_H
+
 #include <iostream>
-//#include "SudokuBoard.h"
 
 using namespace std;
 
-class Stack {
-public:
-  typedef int ItemTy;
-  Stack();
-  void push(const ItemTy& item);
+
+class stack {
+ public:
+  typedef int element;
+  stack();
+  void push(const element& item);
   void pop();
-  ItemTy top() const; // returns the item type top.
+  element top() const; // returns the item type top.
   bool empty() const;
   void show() const;
-  ~Stack();
-  int length();
-private:
-  class Node {
+  ~stack();
+ private:
+  class node {
   public:
-    typedef int ItemTy; // Adds ItemTy as another name for int
-    Node(const ItemTy & value, Node* next = NULL);
-    ItemTy Value;
-    Node * Next;
+    typedef int element; // Adds element as another name for int
+    node(element data, node* n);
+    element value;
+    node * next;
   };
-  
-  Node * Top;
-  void deleteAll(Node* front);
-  Node* copy(Node* head);
-  int len;
-  
+
+  node * _top;
+
+  void deleteAll(node* front);
+  node* copy(node* head);
+
 };
 
 #endif
-
-//SUDOKU PUZZLE SOLVER
