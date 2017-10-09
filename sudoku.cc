@@ -1,8 +1,8 @@
 /*****************************************************************************
  *
- * Name:	Professor Bailey
+ * Name:	Professor Campbell
  *
- * Date:	February 24, 2017
+ * Date:	October 8, 2017
  *
  * Assignment:	Project Sudoku Board
  *
@@ -10,115 +10,108 @@
  *
 *****************************************************************************/
 
-#include "Board.h"	// Note, this is in "backwards" order to help
-#include "Stack.h"		// identify implicit dependencies. Reverse when
-#include <iostream>		// Done.
-#include <cstdlib>
+#include <iostream>
+#include "sudokuboard.h"
 
 using namespace std;
 
-Stack moves;     // Creates variable for board stack to store board moves
-Board board;       // Creates sudoku board
+sudokuboard board;
+stack moves;
 
-/*
-void backtracking() {
-  int row = moves.top();
-  moves.pop();
-  int col = moves.top();
-  moves.pop();
+int numrepl(int repl, int row, int col) {
+  // Replaces number at row, col in board
+	if(repl != 9) {
 
-  int currint = board.get(row, col);
-  for(int num = currint + 1; num <= 9; num++) {
-    if(board.canPlace(row, col, num)) {
-      board.place(moves, row, col, num);
+    // Increments replacement value and searches
+    // for all possible values that can be placed at row, col
+	  for(repl = repl + 1; repl <= 9; repl++) {
+	    if(board.canPlace(row, col, repl)) {
+	      return repl;
+	    }
+	  }
+	}
+	return 0;
+}
+
+void getnum(int r, int c, int & num) {
+  // Returns lowest number that can be placed at row, col in board
+  // Used with mostConstrained function
+  num = 0;
+
+  // Searches for all possible values that can be placed
+  for(int p = 1; p <= 9; p++)
+    if(board.canPlace(r, c, p)) {
+      num = p;
       return;
     }
-   
-    if(num == 9) {
-      board.remove(row, col);
-      backtracking();
-    }
-  }       
 }
 
 
-bool mostConstrained(int r, int c, int num) {
-  int counter = 0;
-  int maxconstrained = 10;
+void mostConstrained(int & r, int & c, int & num) {
+  // Finds most constrained square on grid
+  num = 0;
+
+  int counter = 0; // Amount of numbers that can be placed at row, col
+  int maxconstrained = 10; // Max numbers that can be placed on spot in grid
+
+  // Searches through grid to see how many numbers can be placed at row, col
   for(int row = 0; row < 9; row++)
-    for(int col = 0; col < 9; col++)
-      if(board.get(row, col) == '_') {
-        counter = 0;
-        for(num = 1; num <= 9; num++)
-          if(board.canPlace(row, col, num))
-            counter++;
-        if(!counter == 0)
-          if(counter < maxconstrained) {
-            maxconstrained = counter;
-            board.setRow(row);
-            board.setCol(col);
-            board.setNum(num); 
-          }
+    for(int col = 0; col < 9; col++) {
+      counter = 0; // Initializes counter to zero on each run
+      for(int p = 1; p <= 9; p++) {
+        if(board.canPlace(row, col, p)) 
+          counter++; 
       }
-  return (maxconstrained < 10);
-}
-*/
 
-void print(int x) {
-  cout << x << endl;
+      if(counter != 0 && counter < maxconstrained) {
+        maxconstrained = counter;
+        r = row;
+        c = col;
+      }
+    }
+
+  // If maxconstrained has not changed, a most constrained has not been found
+  if(maxconstrained == 10) {
+    num = 0;
+    return;
+  }
+  getnum(r, c, num);
 }
 
 int main() {
-  
-  int p;
-  //board.place(moves, 1, 4, "x");
-  //string g = board.get(1, 4);
-  //cout << string << endl;
-  //int g[6] = {1, 2, 3, 4, 5, 6};
-  for(int x = 0; x < 10; x++) {
-    moves.push(x);
-    p = moves.top();
-    moves.pop();
-  }
-  print(p);
 
+  int row = 0; 
+  int col = 0; 
+  int num = 0;
 
+  // Finds the first constrained square on the board 
+  // and changes row, col to that position
+  mostConstrained(row, col, num);//, num);
+  while(!board.solved()) {
 
-
-  /*
-  board.setRow(0);
-  board.setCol(0);
-  board.setNum(0);
-  board.Build();
-
-  while(board.solved() == false) {
-    if(mostConstrained(board.getRow(), board.getCol(), board.getNum()))
-      board.place(moves, board.getRow(), board.getCol(), board.getNum());
-    else
-      board.place(moves, board.getRow(), board.getCol(), board.getNum());      
-      backtracking();
+    // If the number returned is not 0, a most constrained has
+    // been found and the number may be placed
+  	if(num > 0) {
+  		board.place(moves, row, col, num);
+  		mostConstrained(row, col, num);
     }
+    else {
+        col = moves.top(); 
+        moves.pop();
+        row = moves.top(); 
+        moves.pop();
+        num = board.get(row, col);
+        board.replace(row, col, '_');
+        num = numrepl(num, row, col); 
+    }
+  }
 
-  if(board.solved() != false)
+  if(board.solved()) {
     board.print();
+  }
   else 
     cout << "BOARD NOT SOLVED" << endl;
-*/
-  /* This is to test stack 
-
-     Stack stack; 
-     stack.push(2);
-     stack.push(3);
-     stack.push('m'+'0');
-     stack.pop();
-     stack.pop();
-     int x = stack.top();
-     stack.show();
-     cout << stack.empty() << endl;
-     cout << x << endl;
-  */
-  // board.print();
-
-
   return 0;
 }
+
+
